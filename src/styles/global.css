@@ -1,0 +1,23 @@
+@import './tokens/index.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bone);
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--text-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+}
