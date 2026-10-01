@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Button from './components/ds/Button';
 import Card from './components/ds/Card';
 import Eyebrow from './components/ds/Eyebrow';
@@ -87,7 +87,56 @@ function TextButton({ onClick, color, hoverColor, style, children }) {
   );
 }
 
+const NAV_LINKS = [
+  ['The App', 'app'],
+  ['Portfolio Advisory', 'advisory'],
+];
+
+// Matches the breakpoint in global.css where the inline nav gives way to the menu button.
+const MOBILE_NAV = '(max-width: 719px)';
+
+function MenuIcon({ open }) {
+  const line = (y, rotate) => ({
+    position: 'absolute',
+    left: 0,
+    top: y,
+    width: 20,
+    height: 1.5,
+    background: 'var(--ink-green)',
+    transform: rotate,
+    transition: 'transform var(--dur-base) var(--ease-standard), opacity var(--dur-fast) var(--ease-standard)',
+  });
+  return (
+    <span aria-hidden="true" style={{ position: 'relative', display: 'block', width: 20, height: 14 }}>
+      <span style={line(0, open ? 'translateY(6.25px) rotate(45deg)' : 'none')} />
+      <span style={{ ...line(6.25, 'none'), opacity: open ? 0 : 1 }} />
+      <span style={line(12.5, open ? 'translateY(-6.25px) rotate(-45deg)' : 'none')} />
+    </span>
+  );
+}
+
 function Header({ go, pickApp }) {
+  const [open, setOpen] = useState(false);
+
+  // Close the menu on Escape, and when the viewport widens past the mobile breakpoint.
+  useEffect(() => {
+    if (!open) return undefined;
+    const onKey = (e) => e.key === 'Escape' && setOpen(false);
+    const mq = window.matchMedia(MOBILE_NAV);
+    const onChange = (e) => !e.matches && setOpen(false);
+    window.addEventListener('keydown', onKey);
+    mq.addEventListener('change', onChange);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      mq.removeEventListener('change', onChange);
+    };
+  }, [open]);
+
+  const choose = (action) => () => {
+    setOpen(false);
+    action();
+  };
+
   return (
     <header
       style={{
@@ -99,6 +148,7 @@ function Header({ go, pickApp }) {
       }}
     >
       <div
+        data-header-bar
         style={{
           maxWidth: 1200,
           margin: '0 auto',
@@ -118,13 +168,14 @@ function Header({ go, pickApp }) {
           aria-label="Back to top"
           style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex' }}
         >
-          <NomadLogo brand="advisory" layout="horizontal" size={15} />
+          <NomadLogo brand="advisory" layout="wordmark" size={15} />
         </button>
-        <nav style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '12px clamp(14px, 2.4vw, 30px)' }}>
-          {[
-            ['The App', 'app'],
-            ['Portfolio Advisory', 'advisory'],
-          ].map(([text, id]) => (
+        <nav
+          className="nav-inline"
+          aria-label="Main"
+          style={{ alignItems: 'center', gap: '12px clamp(14px, 2.4vw, 30px)' }}
+        >
+          {NAV_LINKS.map(([text, id]) => (
             <TextButton
               key={id}
               onClick={() => go(id)}
@@ -138,6 +189,69 @@ function Header({ go, pickApp }) {
           <Button variant="primary" size="sm" onClick={pickApp}>
             Get the app
           </Button>
+        </nav>
+        <button
+          type="button"
+          className="nav-toggle"
+          onClick={() => setOpen((o) => !o)}
+          aria-expanded={open}
+          aria-controls="mobile-menu"
+          aria-label={open ? 'Close menu' : 'Open menu'}
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 44,
+            height: 44,
+            marginRight: -12,
+            background: 'none',
+            border: 'none',
+            borderRadius: 'var(--radius-sm)',
+            cursor: 'pointer',
+          }}
+        >
+          <MenuIcon open={open} />
+        </button>
+      </div>
+
+      <div className="nav-panel" data-open={open}>
+        <nav
+          id="mobile-menu"
+          aria-label="Main"
+          inert={!open}
+          style={{ overflow: 'hidden', minHeight: 0 }}
+        >
+          <div style={{ padding: `4px ${gutter} 24px`, borderTop: '1px solid var(--border-default)' }}>
+            {NAV_LINKS.map(([text, id]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={choose(() => go(id))}
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  textAlign: 'left',
+                  padding: '18px 0',
+                  background: 'none',
+                  border: 'none',
+                  borderBottom: '1px solid var(--border-default)',
+                  cursor: 'pointer',
+                  fontFamily: 'var(--font-sans)',
+                  fontWeight: 500,
+                  fontSize: 12,
+                  letterSpacing: '0.18em',
+                  textTransform: 'uppercase',
+                  color: 'var(--ink-green)',
+                }}
+              >
+                {text}
+              </button>
+            ))}
+            <div style={{ marginTop: 22 }}>
+              <Button variant="primary" full onClick={choose(pickApp)}>
+                Get the app
+              </Button>
+            </div>
+          </div>
         </nav>
       </div>
     </header>
@@ -631,9 +745,16 @@ export default function LandingPage() {
       return;
     }
     const el = document.getElementById(id);
+    // Offset by the header bar alone (plus its 1px border). An open mobile menu is
+    // collapsing as we scroll, and the header sits in the page flow, so everything
+    // below it will move up by the panel's current height.
     const header = rootRef.current?.querySelector('header');
-    const offset = header ? header.offsetHeight : 76;
-    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - offset, behavior: 'smooth' });
+    const bar = header?.querySelector('[data-header-bar]');
+    const offset = bar ? bar.offsetHeight + 1 : 77;
+    const collapsing = header && bar ? header.offsetHeight - offset : 0;
+    if (el) {
+      window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - offset - collapsing, behavior: 'smooth' });
+    }
   };
   const pick = (label) => () => {
     setPicked([label]);

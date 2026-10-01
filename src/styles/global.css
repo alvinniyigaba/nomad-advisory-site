@@ -21,3 +21,42 @@ body {
 button {
   font: inherit;
 }
+
+/* ---- Header navigation: inline links on wide screens, collapsible menu below 720px ---- */
+.nav-inline {
+  display: flex;
+  flex-wrap: wrap;
+}
+.nav-toggle,
+.nav-panel {
+  display: none;
+}
+
+@media (max-width: 719px) {
+  .nav-inline {
+    display: none;
+  }
+  .nav-toggle {
+    display: inline-flex;
+  }
+  .nav-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--dur-base) var(--ease-standard);
+  }
+  .nav-panel[data-open='true'] {
+    grid-template-rows: 1fr;
+  }
+}
+
+.nav-toggle:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-panel,
+  .nav-toggle span {
+    transition: none !important;
+  }
+}
