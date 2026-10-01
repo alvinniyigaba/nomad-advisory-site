@@ -20,6 +20,19 @@ npm run build     # static build into dist/
 npm run preview   # serve the build locally
 ```
 
+## Editing the copy
+
+Every word on the page lives in **`src/content.js`**, laid out section by section in
+page order (header, hero, The Nomad App, Portfolio Advisory, Get started, footer,
+then the figures in the phone mockups). Change the text between the quotes, keep the
+quotes and commas, and save. Lists of features, steps and included items can be
+lengthened or shortened; their numbering follows the order automatically.
+
+The browser-tab title and search description are in `index.html`.
+
+To see changes as you type, run `npm run dev` (locally or in a GitHub Codespace) and
+open the address it prints. Pushing to `main` publishes them to the live site.
+
 ## Deploy (GitHub Pages)
 
 `.github/workflows/deploy.yml` builds the site and publishes `dist/` on every push to

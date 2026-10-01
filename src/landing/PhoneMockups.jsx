@@ -1,6 +1,12 @@
 import figureSrc from '../assets/fund-figure.png';
+import { mockups } from '../content';
 
-// Illustrative figures for the landing page's app mockups — not real data.
+// Illustrative app screens for the landing page. Their words and figures live in
+// src/content.js under `mockups`.
+
+// Bar colours, applied in list order and repeated if a list runs longer.
+const BAR_COLORS = ['var(--ink-green)', 'var(--ochre-gold)', 'var(--savannah-sand)', 'var(--clay-red)'];
+const barColor = (i) => BAR_COLORS[i % BAR_COLORS.length];
 
 const label = (color = 'var(--text-muted)') => ({
   fontSize: 9,
@@ -97,13 +103,8 @@ function AccountRow({ name, sub, value, last, pad = 10 }) {
   );
 }
 
-const OVERVIEW_ACCOUNTS = [
-  ['Equities portfolio', 'Brokerage', '112,400'],
-  ['Money market fund', 'Savings', '58,210'],
-  ['Pension', 'Retirement', '77,700'],
-];
-
 export function OverviewScreen({ currency }) {
+  const c = mockups.overview;
   return (
     <div style={{ padding: '16px 20px 20px', display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -137,12 +138,12 @@ export function OverviewScreen({ currency }) {
             color: 'var(--ink-green)',
           }}
         >
-          AO
+          {c.initials}
         </span>
       </div>
-      <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Good morning, Amara</div>
+      <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{c.greeting}</div>
       <div style={{ background: 'var(--ink-green)', borderRadius: 8, padding: 18 }}>
-        <div style={label('var(--sage-400)')}>Total portfolio</div>
+        <div style={label('var(--sage-400)')}>{c.totalLabel}</div>
         <div
           style={{
             fontFamily: 'var(--font-display)',
@@ -152,17 +153,16 @@ export function OverviewScreen({ currency }) {
             marginTop: 8,
           }}
         >
-          {currency} 248,310
+          {`${currency} ${c.total}`}
         </div>
-        <div style={{ fontSize: 11, color: 'var(--ochre-soft)', marginTop: 6 }}>+2.4% this month</div>
+        <div style={{ fontSize: 11, color: 'var(--ochre-soft)', marginTop: 6 }}>{c.change}</div>
       </div>
       <div>
-        <div style={{ ...label(), marginBottom: 8 }}>Allocation</div>
+        <div style={{ ...label(), marginBottom: 8 }}>{c.allocationLabel}</div>
         <div style={{ display: 'flex', height: 8, borderRadius: 2, overflow: 'hidden', gap: 2 }}>
-          <span style={{ flex: 46, background: 'var(--ink-green)' }} />
-          <span style={{ flex: 24, background: 'var(--ochre-gold)' }} />
-          <span style={{ flex: 18, background: 'var(--savannah-sand)' }} />
-          <span style={{ flex: 12, background: 'var(--clay-red)' }} />
+          {c.allocation.map((a, i) => (
+            <span key={a.name} style={{ flex: a.percent, background: barColor(i) }} />
+          ))}
         </div>
         <div
           style={{
@@ -174,87 +174,78 @@ export function OverviewScreen({ currency }) {
             color: 'var(--text-body)',
           }}
         >
-          <span>Equities 46%</span>
-          <span>Fixed income 24%</span>
-          <span>Cash 18%</span>
-          <span>Property 12%</span>
+          {c.allocation.map((a) => (
+            <span key={a.name}>{`${a.name} ${a.percent}%`}</span>
+          ))}
         </div>
       </div>
       <div>
-        <div style={{ ...label(), marginBottom: 4 }}>Accounts</div>
-        {OVERVIEW_ACCOUNTS.map(([name, sub, value], i) => (
-          <AccountRow key={name} name={name} sub={sub} value={value} last={i === OVERVIEW_ACCOUNTS.length - 1} />
+        <div style={{ ...label(), marginBottom: 4 }}>{c.accountsLabel}</div>
+        {c.accounts.map((a, i) => (
+          <AccountRow key={a.name} name={a.name} sub={a.type} value={a.value} last={i === c.accounts.length - 1} />
         ))}
       </div>
     </div>
   );
 }
 
-const LINKED_ACCOUNTS = [
-  ['Equities portfolio', 'Brokerage · Nairobi', '112,400'],
-  ['Pension', 'Retirement scheme', '77,700'],
-  ['Money market fund', 'Unit trust', '58,210'],
-  ['Fixed deposit', 'Bank · 12 months', '30,000'],
-  ['Savings', 'Bank', '12,450'],
-];
-
 export function AccountsScreen() {
+  const c = mockups.accounts;
   return (
     <div style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div>
-        <div style={screenTitle}>Linked accounts</div>
-        <div style={screenSub}>5 accounts · 4 institutions</div>
+        <div style={screenTitle}>{c.title}</div>
+        <div style={screenSub}>{c.subtitle}</div>
       </div>
       <div style={{ ...panel, padding: '4px 14px' }}>
-        {LINKED_ACCOUNTS.map(([name, sub, value], i) => (
-          <AccountRow key={name} name={name} sub={sub} value={value} pad={12} last={i === LINKED_ACCOUNTS.length - 1} />
+        {c.accounts.map((a, i) => (
+          <AccountRow
+            key={a.name}
+            name={a.name}
+            sub={a.type}
+            value={a.value}
+            pad={12}
+            last={i === c.accounts.length - 1}
+          />
         ))}
       </div>
-      <div style={dashedAction}>Link an account</div>
+      <div style={dashedAction}>{c.action}</div>
     </div>
   );
 }
-
-const ALLOCATION = [
-  ['Equities', 46, 'var(--ink-green)'],
-  ['Fixed income', 24, 'var(--ochre-gold)'],
-  ['Cash and savings', 18, 'var(--savannah-sand)'],
-  ['Property', 12, 'var(--clay-red)'],
-];
 
 const rowText = { display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--text-heading)' };
 const track = { height: 6, background: 'var(--bone-panel)', borderRadius: 2 };
 
 export function AllocationScreen({ currency }) {
+  const c = mockups.allocation;
   return (
     <div style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 18 }}>
       <div>
-        <div style={screenTitle}>Allocation</div>
-        <div style={screenSub}>{currency} 290,760 across 4 asset classes</div>
+        <div style={screenTitle}>{c.title}</div>
+        <div style={screenSub}>{`${currency} ${c.subtitle}`}</div>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-        {ALLOCATION.map(([name, pct, color]) => (
-          <div key={name}>
+        {c.classes.map((a, i) => (
+          <div key={a.name}>
             <div style={{ ...rowText, marginBottom: 6 }}>
-              <span>{name}</span>
-              <span>{pct}%</span>
+              <span>{a.name}</span>
+              <span>{a.percent}%</span>
             </div>
             <div style={track}>
-              <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: 2 }} />
+              <div style={{ width: `${a.percent}%`, height: '100%', background: barColor(i), borderRadius: 2 }} />
             </div>
           </div>
         ))}
       </div>
       <div style={{ ...panel, padding: 14 }}>
-        <div style={label()}>By market</div>
-        <div style={{ ...rowText, marginTop: 10 }}>
-          <span>Local</span>
-          <span>62%</span>
-        </div>
-        <div style={{ ...rowText, marginTop: 6 }}>
-          <span>Offshore</span>
-          <span>38%</span>
-        </div>
+        <div style={label()}>{c.marketsLabel}</div>
+        {c.markets.map((m, i) => (
+          <div key={m.name} style={{ ...rowText, marginTop: i === 0 ? 10 : 6 }}>
+            <span>{m.name}</span>
+            <span>{m.percent}%</span>
+          </div>
+        ))}
       </div>
       <div
         style={{
@@ -266,40 +257,35 @@ export function AllocationScreen({ currency }) {
           color: 'var(--sage-200)',
         }}
       >
-        Equities have drifted 6% above your target. Review with an adviser.
+        {c.note}
       </div>
     </div>
   );
 }
 
-const GOALS = [
-  ['Home deposit', 62, '37,200 of 60,000 · 2028'],
-  ['Education fund', 38, '19,000 of 50,000 · 2032'],
-  ['Emergency reserve', 90, '10,800 of 12,000'],
-];
-
 export function GoalsScreen({ currency }) {
+  const c = mockups.goals;
   return (
     <div style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div>
-        <div style={screenTitle}>Goals</div>
-        <div style={screenSub}>3 goals on track</div>
+        <div style={screenTitle}>{c.title}</div>
+        <div style={screenSub}>{c.subtitle}</div>
       </div>
-      {GOALS.map(([name, pct, detail]) => (
-        <div key={name} style={{ ...panel, padding: 14 }}>
+      {c.goals.map((g) => (
+        <div key={g.name} style={{ ...panel, padding: 14 }}>
           <div style={{ ...rowText, fontWeight: 500 }}>
-            <span>{name}</span>
-            <span style={{ color: 'var(--ochre-gold)' }}>{pct}%</span>
+            <span>{g.name}</span>
+            <span style={{ color: 'var(--ochre-gold)' }}>{g.percent}%</span>
           </div>
           <div style={{ ...track, marginTop: 10 }}>
-            <div style={{ width: `${pct}%`, height: '100%', background: 'var(--ink-green)', borderRadius: 2 }} />
+            <div style={{ width: `${g.percent}%`, height: '100%', background: 'var(--ink-green)', borderRadius: 2 }} />
           </div>
           <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 8 }}>
-            {currency} {detail}
+            {`${currency} ${g.detail}`}
           </div>
         </div>
       ))}
-      <div style={dashedAction}>Set a new goal</div>
+      <div style={dashedAction}>{c.action}</div>
     </div>
   );
 }

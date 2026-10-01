@@ -7,11 +7,12 @@ import NomadLogo from './components/ds/NomadLogo';
 import RouteDivider from './components/ds/RouteDivider';
 import TerrainPattern from './components/ds/TerrainPattern';
 import { AccountsScreen, AllocationScreen, GoalsScreen, OverviewScreen, PhoneFrame } from './landing/PhoneMockups';
+import { advisory, app, contact, footer, hero, nav } from './content';
 
 /**
  * Public marketing page for the Nomad App, with Portfolio Advisory as the
  * secondary product (branded Nomad Advisory). Built from the Claude Design
- * handoff `Nomad App Landing.dc.html`.
+ * handoff `Nomad App Landing.dc.html`. All the words live in src/content.js.
  */
 
 // Dark anchor for the hero and advisory bands: 'ink-green' | 'terrain-black' | 'deep-moss'.
@@ -19,47 +20,12 @@ const ANCHOR = 'ink-green';
 // Currency shown in the illustrative app mockups.
 const CURRENCY = 'USD';
 
-const APP = 'The Nomad App';
-const ADVISORY = 'Portfolio advisory';
-
 const gutter = 'clamp(20px, 4vw, 48px)';
 const wrap = { maxWidth: 1200, margin: '0 auto', padding: `0 ${gutter}` };
 const upperLabel = { fontSize: 10, fontWeight: 600, letterSpacing: '0.26em', textTransform: 'uppercase' };
 
-const FEATURES = [
-  {
-    id: 'accounts',
-    num: 'I',
-    title: 'Every account, one view',
-    body: 'Link brokerage, pension, savings and money-market accounts. One balance, kept current.',
-  },
-  {
-    id: 'allocation',
-    num: 'II',
-    title: 'Know where you stand',
-    body: 'See how your wealth is spread across asset classes and markets — and where it has drifted.',
-  },
-  {
-    id: 'goals',
-    num: 'III',
-    title: 'Save towards what matters',
-    body: 'Set goals, fund them from any account, and watch the distance close.',
-  },
-];
-
-const STEPS = [
-  ['01', 'Reading the country', 'A conversation about where you are, what you hold and where you want to be.'],
-  ['02', 'Drawing the route', 'A written portfolio plan — allocation, instruments and the reasoning behind each.'],
-  ['03', 'Setting out', 'We help you open the accounts and put the plan in place.'],
-  ['04', 'Staying on course', 'Your advised portfolio lives in the Nomad App, reviewed with you as life moves.'],
-];
-
-const INCLUDED = [
-  'A dedicated adviser from first conversation onwards',
-  'A written portfolio plan you keep',
-  'Help with account opening and set-up',
-  'Scheduled reviews, tracked in the app',
-];
+const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+const twoDigits = (i) => String(i + 1).padStart(2, '0');
 
 function TextButton({ onClick, color, hoverColor, style, children }) {
   const [hover, setHover] = useState(false);
@@ -88,8 +54,8 @@ function TextButton({ onClick, color, hoverColor, style, children }) {
 }
 
 const NAV_LINKS = [
-  ['The App', 'app'],
-  ['Portfolio Advisory', 'advisory'],
+  [nav.app, 'app'],
+  [nav.advisory, 'advisory'],
 ];
 
 // Matches the breakpoint in global.css where the inline nav gives way to the menu button.
@@ -187,7 +153,7 @@ function Header({ go, pickApp }) {
             </TextButton>
           ))}
           <Button variant="primary" size="sm" onClick={pickApp}>
-            Get the app
+            {nav.getApp}
           </Button>
         </nav>
         <button
@@ -248,7 +214,7 @@ function Header({ go, pickApp }) {
             ))}
             <div style={{ marginTop: 22 }}>
               <Button variant="primary" full onClick={choose(pickApp)}>
-                Get the app
+                {nav.getApp}
               </Button>
             </div>
           </div>
@@ -286,7 +252,7 @@ function Hero({ go, pickApp }) {
         }}
       >
         <div style={{ flex: '1 1 440px', maxWidth: 600, minWidth: 0 }}>
-          <Eyebrow theme="ink">The Nomad App · Nomad Advisory</Eyebrow>
+          <Eyebrow theme="ink">{hero.eyebrow}</Eyebrow>
           <h1
             style={{
               fontFamily: 'var(--font-display)',
@@ -299,7 +265,7 @@ function Hero({ go, pickApp }) {
               textWrap: 'balance',
             }}
           >
-            Your whole portfolio, under one roof.
+            {hero.headline}
           </h1>
           <p
             style={{
@@ -312,15 +278,14 @@ function Hero({ go, pickApp }) {
               textWrap: 'pretty',
             }}
           >
-            Investments and savings scattered across institutions, statements and logins — gathered into one clear
-            view. The Nomad App shows you the whole terrain, so you can choose the route through it.
+            {hero.intro}
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, marginTop: 36 }}>
             <Button variant="gold" onClick={pickApp}>
-              Get the app
+              {hero.primaryButton}
             </Button>
             <Button variant="outline" theme="ink" onClick={() => go('advisory')}>
-              Explore portfolio advisory
+              {hero.secondaryButton}
             </Button>
           </div>
         </div>
@@ -332,7 +297,7 @@ function Hero({ go, pickApp }) {
   );
 }
 
-function FeatureButton({ feature, active, onSelect }) {
+function FeatureButton({ feature, num, active, onSelect }) {
   return (
     <button
       type="button"
@@ -361,7 +326,7 @@ function FeatureButton({ feature, active, onSelect }) {
             color: 'var(--ochre-gold)',
           }}
         >
-          {feature.num}
+          {num}
         </span>
         <div>
           <div
@@ -383,11 +348,12 @@ function FeatureButton({ feature, active, onSelect }) {
 }
 
 function AppSection() {
-  const [tab, setTab] = useState('accounts');
+  const [tab, setTab] = useState(0);
+  const screen = app.features[tab]?.screen;
   return (
     <section id="app" style={{ background: 'var(--bone)', padding: 'clamp(64px, 8vw, 96px) 0' }}>
       <div style={wrap}>
-        <Eyebrow number="01">The Nomad App</Eyebrow>
+        <Eyebrow number="01">{app.eyebrow}</Eyebrow>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px 56px', marginTop: 26, alignItems: 'flex-end' }}>
           <h2
             style={{
@@ -401,24 +367,23 @@ function AppSection() {
               textWrap: 'balance',
             }}
           >
-            One map for everything you hold.
+            {app.headline}
           </h2>
           <p style={{ flex: '1 1 380px', fontSize: 15, lineHeight: 1.75, margin: 0, maxWidth: 460, textWrap: 'pretty' }}>
-            Most people cannot say, at a glance, what they own or how it is spread. The Nomad App answers both — and
-            keeps answering as your wealth grows.
+            {app.intro}
           </p>
         </div>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 56, alignItems: 'center', marginTop: 56 }}>
           <div style={{ flex: '1 1 420px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
-            {FEATURES.map((f) => (
-              <FeatureButton key={f.id} feature={f} active={tab === f.id} onSelect={() => setTab(f.id)} />
+            {app.features.map((f, i) => (
+              <FeatureButton key={f.title} feature={f} num={ROMAN[i]} active={tab === i} onSelect={() => setTab(i)} />
             ))}
           </div>
           <PhoneFrame>
-            {tab === 'accounts' && <AccountsScreen />}
-            {tab === 'allocation' && <AllocationScreen currency={CURRENCY} />}
-            {tab === 'goals' && <GoalsScreen currency={CURRENCY} />}
+            {screen === 'accounts' && <AccountsScreen />}
+            {screen === 'allocation' && <AllocationScreen currency={CURRENCY} />}
+            {screen === 'goals' && <GoalsScreen currency={CURRENCY} />}
           </PhoneFrame>
         </div>
       </div>
@@ -434,7 +399,7 @@ function AdvisorySection({ pickAdvisory }) {
       </div>
       <div style={{ ...wrap, position: 'relative' }}>
         <Eyebrow number="02" theme="ink">
-          Portfolio Advisory
+          {advisory.eyebrow}
         </Eyebrow>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 56, marginTop: 26, alignItems: 'flex-start' }}>
           <div style={{ flex: '1 1 460px', minWidth: 0 }}>
@@ -449,7 +414,7 @@ function AdvisorySection({ pickAdvisory }) {
                 textWrap: 'balance',
               }}
             >
-              When the terrain calls for a guide.
+              {advisory.headline}
             </h2>
             <p
               style={{
@@ -461,8 +426,7 @@ function AdvisorySection({ pickAdvisory }) {
                 textWrap: 'pretty',
               }}
             >
-              Seeing your wealth clearly is the first step. Arranging it well is the next. Our advisers help you build
-              an investment portfolio around your goals, horizon and appetite for risk — for a clear, agreed fee.
+              {advisory.intro}
             </p>
             <div
               style={{
@@ -472,8 +436,8 @@ function AdvisorySection({ pickAdvisory }) {
                 marginTop: 44,
               }}
             >
-              {STEPS.map(([num, title, body]) => (
-                <div key={num} style={{ borderTop: '1px dashed rgba(201,138,43,0.55)', paddingTop: 20 }}>
+              {advisory.steps.map((step, i) => (
+                <div key={step.title} style={{ borderTop: '1px dashed rgba(201,138,43,0.55)', paddingTop: 20 }}>
                   <div
                     style={{
                       fontFamily: 'var(--font-display)',
@@ -482,7 +446,7 @@ function AdvisorySection({ pickAdvisory }) {
                       color: 'var(--ochre-soft)',
                     }}
                   >
-                    {num}
+                    {twoDigits(i)}
                   </div>
                   <div
                     style={{
@@ -494,18 +458,18 @@ function AdvisorySection({ pickAdvisory }) {
                       marginTop: 12,
                     }}
                   >
-                    {title}
+                    {step.title}
                   </div>
-                  <p style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--sage-400)', margin: '8px 0 0' }}>{body}</p>
+                  <p style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--sage-400)', margin: '8px 0 0' }}>{step.body}</p>
                 </div>
               ))}
             </div>
           </div>
           <div style={{ flex: '1 1 340px', minWidth: 0, maxWidth: 440 }}>
             <Card variant="ink" padding={34} style={{ background: 'rgba(27,63,60,0.94)' }}>
-              <div style={{ ...upperLabel, color: 'var(--ochre-soft)' }}>What is included</div>
+              <div style={{ ...upperLabel, color: 'var(--ochre-soft)' }}>{advisory.includedHeading}</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 22, color: 'var(--sage-200)' }}>
-                {INCLUDED.map((item) => (
+                {advisory.included.map((item) => (
                   <div key={item} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
                     <span
                       style={{
@@ -523,14 +487,14 @@ function AdvisorySection({ pickAdvisory }) {
                 ))}
               </div>
               <div style={{ marginTop: 26, paddingTop: 20, borderTop: '1px solid rgba(201,138,43,0.28)' }}>
-                <div style={{ ...upperLabel, color: 'var(--sage-400)' }}>Fee</div>
+                <div style={{ ...upperLabel, color: 'var(--sage-400)' }}>{advisory.feeHeading}</div>
                 <p style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--sage-200)', margin: '8px 0 0' }}>
-                  Agreed in writing before any work begins. No hidden commissions.
+                  {advisory.fee}
                 </p>
               </div>
               <div style={{ marginTop: 26 }}>
                 <Button variant="gold" onClick={pickAdvisory}>
-                  Book a consultation
+                  {advisory.button}
                 </Button>
               </div>
             </Card>
@@ -568,8 +532,7 @@ function InterestChip({ label, on, onToggle }) {
 }
 
 function ContactSection({ picked, setPicked, sent, setSent }) {
-  const toggle = (label) =>
-    setPicked((p) => (p.includes(label) ? p.filter((x) => x !== label) : [...p, label]));
+  const toggle = (key) => setPicked((p) => (p.includes(key) ? p.filter((x) => x !== key) : [...p, key]));
 
   // No lead-capture backend yet: submitting only shows the confirmation state.
   const onSubmit = (e) => {
@@ -577,15 +540,13 @@ function ContactSection({ picked, setPicked, sent, setSent }) {
     setSent(true);
   };
 
-  const sentMsg = picked.includes(ADVISORY)
-    ? 'An adviser will be in touch to arrange your first conversation.'
-    : 'We will be in touch with your access to the Nomad App.';
+  const sentMsg = picked.includes('advisory') ? contact.thanksAdvisory : contact.thanksApp;
 
   return (
     <section id="contact" style={{ background: 'var(--bone-warm)', padding: 'clamp(64px, 8vw, 96px) 0' }}>
       <div style={{ ...wrap, display: 'flex', flexWrap: 'wrap', gap: 56, alignItems: 'flex-start' }}>
         <div style={{ flex: '1 1 360px', minWidth: 0 }}>
-          <Eyebrow number="03">Get started</Eyebrow>
+          <Eyebrow number="03">{contact.eyebrow}</Eyebrow>
           <h2
             style={{
               fontFamily: 'var(--font-display)',
@@ -597,10 +558,10 @@ function ContactSection({ picked, setPicked, sent, setSent }) {
               textWrap: 'balance',
             }}
           >
-            Begin with a clear view.
+            {contact.headline}
           </h2>
           <p style={{ fontSize: 15, lineHeight: 1.75, maxWidth: 420, margin: 0, textWrap: 'pretty' }}>
-            Request access to the Nomad App, book a portfolio consultation, or both. An adviser will be in touch.
+            {contact.intro}
           </p>
           <div style={{ marginTop: 36, maxWidth: 360 }}>
             <RouteDivider variant="straight" width={360} />
@@ -613,7 +574,7 @@ function ContactSection({ picked, setPicked, sent, setSent }) {
                 <div
                   style={{ fontFamily: 'var(--font-display)', fontSize: 24, color: 'var(--ink-green)', marginBottom: 12 }}
                 >
-                  Thank you.
+                  {contact.thanksHeading}
                 </div>
                 <p style={{ fontSize: 14, lineHeight: 1.7, margin: '0 0 22px' }}>{sentMsg}</p>
                 <Button
@@ -623,7 +584,7 @@ function ContactSection({ picked, setPicked, sent, setSent }) {
                     setPicked([]);
                   }}
                 >
-                  Send another
+                  {contact.sendAnotherButton}
                 </Button>
               </div>
             ) : (
@@ -639,11 +600,11 @@ function ContactSection({ picked, setPicked, sent, setSent }) {
                       marginBottom: 10,
                     }}
                   >
-                    I am interested in
+                    {contact.interestsLabel}
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                    {[APP, ADVISORY].map((label) => (
-                      <InterestChip key={label} label={label} on={picked.includes(label)} onToggle={() => toggle(label)} />
+                    {Object.entries(contact.interests).map(([key, label]) => (
+                      <InterestChip key={key} label={label} on={picked.includes(key)} onToggle={() => toggle(key)} />
                     ))}
                   </div>
                 </div>
@@ -654,20 +615,14 @@ function ContactSection({ picked, setPicked, sent, setSent }) {
                     gap: 18,
                   }}
                 >
-                  <Field label="Full name" name="name" autoComplete="name" placeholder="Amara Okonkwo" />
-                  <Field label="Phone" name="phone" type="tel" autoComplete="tel" placeholder="+254 700 000 000" />
+                  <Field {...contact.fields.name} name="name" autoComplete="name" />
+                  <Field {...contact.fields.phone} name="phone" type="tel" autoComplete="tel" />
                 </div>
-                <Field label="Email" name="email" type="email" autoComplete="email" placeholder="you@example.com" />
-                <Field
-                  label="Anything we should know"
-                  name="message"
-                  as="textarea"
-                  rows={3}
-                  placeholder="What you hold today, and what you are working towards."
-                />
+                <Field {...contact.fields.email} name="email" type="email" autoComplete="email" />
+                <Field {...contact.fields.message} name="message" as="textarea" rows={3} />
                 <div>
                   <Button variant="primary" type="submit">
-                    Send
+                    {contact.sendButton}
                   </Button>
                 </div>
               </form>
@@ -695,12 +650,12 @@ function Footer({ go }) {
           <div>
             <NomadLogo brand="advisory" layout="horizontal" theme="ink" size={15} />
             <div style={{ fontSize: 12, letterSpacing: '0.04em', color: 'var(--sage-400)', marginTop: 20 }}>
-              A Nomad Group practice · Nomad Ventures LLP
+              {footer.tagline}
             </div>
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 28, alignItems: 'center' }}>
             <TextButton onClick={() => go('app')} color="var(--sage-400)" hoverColor="var(--sage-200)" style={{ padding: 0 }}>
-              The App
+              {nav.app}
             </TextButton>
             <TextButton
               onClick={() => go('advisory')}
@@ -708,10 +663,10 @@ function Footer({ go }) {
               hoverColor="var(--sage-200)"
               style={{ padding: 0 }}
             >
-              Portfolio Advisory
+              {nav.advisory}
             </TextButton>
             <span style={{ fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--sage-400)' }}>
-              © 2026 Nomad Group
+              {footer.copyright}
             </span>
           </div>
         </div>
@@ -726,8 +681,7 @@ function Footer({ go }) {
             maxWidth: 820,
           }}
         >
-          The value of investments can go down as well as up. Figures shown in the app are illustrative. Regulatory
-          disclosures to be confirmed.
+          {footer.disclaimer}
         </p>
       </div>
     </footer>
@@ -756,8 +710,8 @@ export default function LandingPage() {
       window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - offset - collapsing, behavior: 'smooth' });
     }
   };
-  const pick = (label) => () => {
-    setPicked([label]);
+  const pick = (key) => () => {
+    setPicked([key]);
     setSent(false);
     go('contact');
   };
@@ -767,10 +721,10 @@ export default function LandingPage() {
       ref={rootRef}
       style={{ fontFamily: 'var(--font-sans)', background: 'var(--bone)', color: 'var(--text-body)', minHeight: '100vh' }}
     >
-      <Header go={go} pickApp={pick(APP)} />
-      <Hero go={go} pickApp={pick(APP)} />
+      <Header go={go} pickApp={pick('app')} />
+      <Hero go={go} pickApp={pick('app')} />
       <AppSection />
-      <AdvisorySection pickAdvisory={pick(ADVISORY)} />
+      <AdvisorySection pickAdvisory={pick('advisory')} />
       <ContactSection picked={picked} setPicked={setPicked} sent={sent} setSent={setSent} />
       <Footer go={go} />
     </div>
