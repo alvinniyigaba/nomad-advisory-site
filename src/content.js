@@ -21,10 +21,10 @@ export const nav = {
 
 // ---- Hero: the dark band at the top ----
 export const hero = {
-  eyebrow: 'The Nomad App · Nomad Advisory',
+  
   headline: 'Your whole portfolio, under one roof.',
   intro:
-    'Investments and savings scattered across institutions, statements and logins — gathered into one clear view. The Nomad App shows you the whole terrain, so you can choose the route through it.',
+    'Investments and savings scattered across institutions, statements and logins now gathered into one clear view. The Nomad App shows you the whole terrain, so you can choose the route through it.',
   primaryButton: 'Get the app',
   secondaryButton: 'Explore portfolio advisory',
 };
@@ -34,7 +34,7 @@ export const app = {
   eyebrow: 'The Nomad App',
   headline: 'One map for everything you hold.',
   intro:
-    'Most people cannot say, at a glance, what they own or how it is spread. The Nomad App answers both — and keeps answering as your wealth grows.',
+    'Most people cannot say, at a glance, what they own or how it is spread. The Nomad App answers both and keeps answering as your wealth grows.',
   // Each feature switches the phone screen beside it. The `screen` value picks
   // which phone screen goes with it: 'accounts', 'allocation' or 'goals'.
   features: [
@@ -69,7 +69,7 @@ export const advisory = {
     },
     {
       title: 'Drawing the route',
-      body: 'A written portfolio plan — allocation, instruments and the reasoning behind each.',
+      body: 'A written portfolio plan allocation, instruments and the reasoning behind each.',
     },
     {
       title: 'Setting out',
@@ -105,7 +105,7 @@ export const contact = {
   },
   fields: {
     name: { label: 'Full name', placeholder: 'Amara Okonkwo' },
-    phone: { label: 'Phone', placeholder: '+254 700 000 000' },
+    phone: { label: 'Phone', placeholder: '+256 700 000 000' },
     email: { label: 'Email', placeholder: 'you@example.com' },
     message: { label: 'Anything we should know', placeholder: 'What you hold today, and what you are working towards.' },
   },
