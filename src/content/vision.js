@@ -15,8 +15,8 @@
 export const hero = {
   eyebrow: 'Our Vision',
   quote:
-    'I envision an Africa that has reclaimed its honor, where we call on each other to solve our own problems, and stand at the tables of global negotiation not as beggars, but as equitable partners.',
-  attribution: 'Niyigaba Alvin, Founder',
+    'We envision an Africa that has reclaimed its honor, where we call on each other to solve our own problems, and stand at the tables of global negotiation not as beggars, but as equitable partners.',
+  attribution: 'The founding team',
 };
 
 // ---- Section 01: Mission, with the company facts beside it ----
