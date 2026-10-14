@@ -67,14 +67,6 @@ Source: GitHub Actions**. The site is then served at
 page). Asset paths are relative (`base: './'` in `vite.config.js`), so no path
 configuration is needed.
 
-## Settings
-
-At the top of `src/LandingPage.jsx`:
-
-- `ANCHOR` — dark background for the hero and advisory bands:
-  `'ink-green'` (default), `'terrain-black'` or `'deep-moss'`.
-- `CURRENCY` — currency in the illustrative app mockups (default `USD`).
-
 ## Before going live
 
 - The enquiry form has no backend: **Send** only shows the thank-you state.
