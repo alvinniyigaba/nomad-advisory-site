@@ -1,238 +1,35 @@
-import { useEffect, useRef, useState } from 'react';
-import Button from './components/ds/Button';
-import Card from './components/ds/Card';
-import Eyebrow from './components/ds/Eyebrow';
-import Field from './components/ds/Field';
-import NomadLogo from './components/ds/NomadLogo';
-import RouteDivider from './components/ds/RouteDivider';
-import TerrainPattern from './components/ds/TerrainPattern';
-import { AccountsScreen, AllocationScreen, GoalsScreen, OverviewScreen, PhoneFrame } from './landing/PhoneMockups';
-import { advisory, app, contact, footer, hero, nav } from './content';
+import { useState } from 'react';
+import Button from '../components/ds/Button';
+import Card from '../components/ds/Card';
+import Eyebrow from '../components/ds/Eyebrow';
+import Field from '../components/ds/Field';
+import RouteDivider from '../components/ds/RouteDivider';
+import TerrainPattern from '../components/ds/TerrainPattern';
+import { advisory, app, contact, hero, pageNote } from '../content/landing';
+import PageShell from '../site/PageShell';
+import { gutter, ROMAN, scrollToSection, twoDigits, upperLabel, wrap } from '../site/layout';
+import { AnchorBand } from '../site/ui';
+import { AccountsScreen, AllocationScreen, GoalsScreen, OverviewScreen, PhoneFrame } from './home/PhoneMockups';
 
 /**
- * Public marketing page for the Nomad App, with Portfolio Advisory as the
- * secondary product (branded Nomad Advisory). Built from the Claude Design
- * handoff `Nomad App Landing.dc.html`. All the words live in src/content.js.
+ * Home page: the Nomad App, with Portfolio Advisory as the secondary product, and the
+ * enquiry form the other pages link to. Built from the Claude Design handoff
+ * `Nomad App Landing.dc.html`. All the words live in src/content/landing.js.
  */
 
-// Dark anchor for the hero and advisory bands: 'ink-green' | 'terrain-black' | 'deep-moss'.
-const ANCHOR = 'ink-green';
 // Currency shown in the illustrative app mockups.
 const CURRENCY = 'USD';
 
-const gutter = 'clamp(20px, 4vw, 48px)';
-const wrap = { maxWidth: 1200, margin: '0 auto', padding: `0 ${gutter}` };
-const upperLabel = { fontSize: 10, fontWeight: 600, letterSpacing: '0.26em', textTransform: 'uppercase' };
+// Which thank-you message wins when several interests are picked.
+const THANKS_ORDER = ['advisory', 'fund', 'credit', 'app'];
 
-const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
-const twoDigits = (i) => String(i + 1).padStart(2, '0');
-
-function TextButton({ onClick, color, hoverColor, style, children }) {
-  const [hover, setHover] = useState(false);
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      style={{
-        background: 'none',
-        border: 'none',
-        cursor: 'pointer',
-        fontFamily: 'var(--font-sans)',
-        fontSize: 11,
-        letterSpacing: '0.18em',
-        textTransform: 'uppercase',
-        color: hover ? hoverColor : color,
-        transition: 'color 140ms',
-        ...style,
-      }}
-    >
-      {children}
-    </button>
-  );
+// An interest passed in the address (?interest=fund) by a link from another page.
+function interestFromUrl() {
+  const key = new URLSearchParams(window.location.search).get('interest');
+  return key && key in contact.interests ? [key] : [];
 }
 
-const NAV_LINKS = [
-  [nav.app, 'app'],
-  [nav.advisory, 'advisory'],
-];
-
-// Matches the breakpoint in global.css where the inline nav gives way to the menu button.
-const MOBILE_NAV = '(max-width: 719px)';
-
-function MenuIcon({ open }) {
-  const line = (y, rotate) => ({
-    position: 'absolute',
-    left: 0,
-    top: y,
-    width: 20,
-    height: 1.5,
-    background: 'var(--ink-green)',
-    transform: rotate,
-    transition: 'transform var(--dur-base) var(--ease-standard), opacity var(--dur-fast) var(--ease-standard)',
-  });
-  return (
-    <span aria-hidden="true" style={{ position: 'relative', display: 'block', width: 20, height: 14 }}>
-      <span style={line(0, open ? 'translateY(6.25px) rotate(45deg)' : 'none')} />
-      <span style={{ ...line(6.25, 'none'), opacity: open ? 0 : 1 }} />
-      <span style={line(12.5, open ? 'translateY(-6.25px) rotate(-45deg)' : 'none')} />
-    </span>
-  );
-}
-
-function Header({ go, pickApp }) {
-  const [open, setOpen] = useState(false);
-
-  // Close the menu on Escape, and when the viewport widens past the mobile breakpoint.
-  useEffect(() => {
-    if (!open) return undefined;
-    const onKey = (e) => e.key === 'Escape' && setOpen(false);
-    const mq = window.matchMedia(MOBILE_NAV);
-    const onChange = (e) => !e.matches && setOpen(false);
-    window.addEventListener('keydown', onKey);
-    mq.addEventListener('change', onChange);
-    return () => {
-      window.removeEventListener('keydown', onKey);
-      mq.removeEventListener('change', onChange);
-    };
-  }, [open]);
-
-  const choose = (action) => () => {
-    setOpen(false);
-    action();
-  };
-
-  return (
-    <header
-      style={{
-        position: 'sticky',
-        top: 'env(safe-area-inset-top, 0px)',
-        zIndex: 20,
-        background: 'rgba(245,238,226,0.95)',
-        borderBottom: '1px solid var(--border-default)',
-      }}
-    >
-      <div
-        data-header-bar
-        style={{
-          maxWidth: 1200,
-          margin: '0 auto',
-          padding: `12px ${gutter}`,
-          minHeight: 76,
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '12px 24px',
-        }}
-      >
-        <button
-          type="button"
-          onClick={() => go('top')}
-          aria-label="Back to top"
-          style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex' }}
-        >
-          <NomadLogo brand="advisory" layout="wordmark" size={15} />
-        </button>
-        <nav
-          className="nav-inline"
-          aria-label="Main"
-          style={{ alignItems: 'center', gap: '12px clamp(14px, 2.4vw, 30px)' }}
-        >
-          {NAV_LINKS.map(([text, id]) => (
-            <TextButton
-              key={id}
-              onClick={() => go(id)}
-              color="var(--text-body)"
-              hoverColor="var(--ink-green)"
-              style={{ padding: '6px 0', fontWeight: 500 }}
-            >
-              {text}
-            </TextButton>
-          ))}
-          <Button variant="primary" size="sm" onClick={pickApp}>
-            {nav.getApp}
-          </Button>
-        </nav>
-        <button
-          type="button"
-          className="nav-toggle"
-          onClick={() => setOpen((o) => !o)}
-          aria-expanded={open}
-          aria-controls="mobile-menu"
-          aria-label={open ? 'Close menu' : 'Open menu'}
-          style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 44,
-            height: 44,
-            marginRight: -12,
-            background: 'none',
-            border: 'none',
-            borderRadius: 'var(--radius-sm)',
-            cursor: 'pointer',
-          }}
-        >
-          <MenuIcon open={open} />
-        </button>
-      </div>
-
-      <div className="nav-panel" data-open={open}>
-        <nav
-          id="mobile-menu"
-          aria-label="Main"
-          inert={!open}
-          style={{ overflow: 'hidden', minHeight: 0 }}
-        >
-          <div style={{ padding: `4px ${gutter} 24px`, borderTop: '1px solid var(--border-default)' }}>
-            {NAV_LINKS.map(([text, id]) => (
-              <button
-                key={id}
-                type="button"
-                onClick={choose(() => go(id))}
-                style={{
-                  display: 'block',
-                  width: '100%',
-                  textAlign: 'left',
-                  padding: '18px 0',
-                  background: 'none',
-                  border: 'none',
-                  borderBottom: '1px solid var(--border-default)',
-                  cursor: 'pointer',
-                  fontFamily: 'var(--font-sans)',
-                  fontWeight: 500,
-                  fontSize: 12,
-                  letterSpacing: '0.18em',
-                  textTransform: 'uppercase',
-                  color: 'var(--ink-green)',
-                }}
-              >
-                {text}
-              </button>
-            ))}
-            <div style={{ marginTop: 22 }}>
-              <Button variant="primary" full onClick={choose(pickApp)}>
-                {nav.getApp}
-              </Button>
-            </div>
-          </div>
-        </nav>
-      </div>
-    </header>
-  );
-}
-
-function AnchorBand({ id, children, style }) {
-  return (
-    <section id={id} style={{ position: 'relative', background: `var(--${ANCHOR})`, overflow: 'hidden', ...style }}>
-      {children}
-    </section>
-  );
-}
-
-function Hero({ go, pickApp }) {
+function Hero({ pickApp }) {
   return (
     <AnchorBand>
       <div style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', right: 0 }}>
@@ -252,7 +49,7 @@ function Hero({ go, pickApp }) {
         }}
       >
         <div style={{ flex: '1 1 440px', maxWidth: 600, minWidth: 0 }}>
-          <Eyebrow theme="ink">{hero.eyebrow}</Eyebrow>
+          {hero.eyebrow && <Eyebrow theme="ink">{hero.eyebrow}</Eyebrow>}
           <h1
             style={{
               fontFamily: 'var(--font-display)',
@@ -261,7 +58,7 @@ function Hero({ go, pickApp }) {
               lineHeight: 1.12,
               letterSpacing: '0.03em',
               color: 'var(--sage-200)',
-              margin: '24px 0 0',
+              margin: hero.eyebrow ? '24px 0 0' : 0,
               textWrap: 'balance',
             }}
           >
@@ -284,7 +81,7 @@ function Hero({ go, pickApp }) {
             <Button variant="gold" onClick={pickApp}>
               {hero.primaryButton}
             </Button>
-            <Button variant="outline" theme="ink" onClick={() => go('advisory')}>
+            <Button variant="outline" theme="ink" onClick={() => scrollToSection('advisory')}>
               {hero.secondaryButton}
             </Button>
           </div>
@@ -540,7 +337,7 @@ function ContactSection({ picked, setPicked, sent, setSent }) {
     setSent(true);
   };
 
-  const sentMsg = picked.includes('advisory') ? contact.thanksAdvisory : contact.thanksApp;
+  const sentMsg = contact.thanks[THANKS_ORDER.find((k) => picked.includes(k)) ?? 'app'];
 
   return (
     <section id="contact" style={{ background: 'var(--bone-warm)', padding: 'clamp(64px, 8vw, 96px) 0' }}>
@@ -634,99 +431,23 @@ function ContactSection({ picked, setPicked, sent, setSent }) {
   );
 }
 
-function Footer({ go }) {
-  return (
-    <footer style={{ background: 'var(--ink-green)', padding: '56px 0 40px' }}>
-      <div style={wrap}>
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'space-between',
-            alignItems: 'flex-end',
-            gap: 36,
-          }}
-        >
-          <div>
-            <NomadLogo brand="advisory" layout="horizontal" theme="ink" size={15} />
-            <div style={{ fontSize: 12, letterSpacing: '0.04em', color: 'var(--sage-400)', marginTop: 20 }}>
-              {footer.tagline}
-            </div>
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 28, alignItems: 'center' }}>
-            <TextButton onClick={() => go('app')} color="var(--sage-400)" hoverColor="var(--sage-200)" style={{ padding: 0 }}>
-              {nav.app}
-            </TextButton>
-            <TextButton
-              onClick={() => go('advisory')}
-              color="var(--sage-400)"
-              hoverColor="var(--sage-200)"
-              style={{ padding: 0 }}
-            >
-              {nav.advisory}
-            </TextButton>
-            <span style={{ fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--sage-400)' }}>
-              {footer.copyright}
-            </span>
-          </div>
-        </div>
-        <p
-          style={{
-            fontSize: 11,
-            lineHeight: 1.7,
-            color: 'var(--sage-400)',
-            margin: '36px 0 0',
-            paddingTop: 20,
-            borderTop: '1px solid rgba(201,138,43,0.28)',
-            maxWidth: 820,
-          }}
-        >
-          {footer.disclaimer}
-        </p>
-      </div>
-    </footer>
-  );
-}
 
-export default function LandingPage() {
-  const [picked, setPicked] = useState([]);
+export default function HomePage() {
+  const [picked, setPicked] = useState(interestFromUrl);
   const [sent, setSent] = useState(false);
-  const rootRef = useRef(null);
 
-  const go = (id) => {
-    if (id === 'top') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-    const el = document.getElementById(id);
-    // Offset by the header bar alone (plus its 1px border). An open mobile menu is
-    // collapsing as we scroll, and the header sits in the page flow, so everything
-    // below it will move up by the panel's current height.
-    const header = rootRef.current?.querySelector('header');
-    const bar = header?.querySelector('[data-header-bar]');
-    const offset = bar ? bar.offsetHeight + 1 : 77;
-    const collapsing = header && bar ? header.offsetHeight - offset : 0;
-    if (el) {
-      window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - offset - collapsing, behavior: 'smooth' });
-    }
-  };
   const pick = (key) => () => {
     setPicked([key]);
     setSent(false);
-    go('contact');
+    scrollToSection('contact');
   };
 
   return (
-    <div
-      ref={rootRef}
-      style={{ fontFamily: 'var(--font-sans)', background: 'var(--bone)', color: 'var(--text-body)', minHeight: '100vh' }}
-    >
-      <Header go={go} pickApp={pick('app')} />
-      <Hero go={go} pickApp={pick('app')} />
+    <PageShell current="home" onGetApp={pick('app')} note={pageNote}>
+      <Hero pickApp={pick('app')} />
       <AppSection />
       <AdvisorySection pickAdvisory={pick('advisory')} />
       <ContactSection picked={picked} setPicked={setPicked} sent={sent} setSent={setSent} />
-      <Footer go={go} />
-    </div>
+    </PageShell>
   );
 }

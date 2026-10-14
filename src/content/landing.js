@@ -1,5 +1,7 @@
 /**
- * All the words on the landing page, in the order they appear.
+ * All the words on the home page (the Nomad App & Advisory landing page), in the
+ * order they appear. The header menu and footer are shared by every page and live
+ * in site.js.
  *
  * Edit the text between the quotes and save. Keep the quotes, commas and
  * brackets as they are. To use an apostrophe inside a 'single-quoted' line,
@@ -12,16 +14,9 @@
  * The browser-tab title and search-engine description live in index.html.
  */
 
-// ---- Header menu (also used in the footer) ----
-export const nav = {
-  app: 'The App',
-  advisory: 'Portfolio Advisory',
-  getApp: 'Get the app',
-};
-
 // ---- Hero: the dark band at the top ----
 export const hero = {
-  
+  eyebrow: '', // small label above the headline; leave empty to hide it
   headline: 'Your whole portfolio, under one roof.',
   intro:
     'Investments and savings scattered across institutions, statements and logins now gathered into one clear view. The Nomad App shows you the whole terrain, so you can choose the route through it.',
@@ -97,11 +92,15 @@ export const advisory = {
 export const contact = {
   eyebrow: 'Get started',
   headline: 'Begin with a clear view.',
-  intro: 'Request access to the Nomad App, book a portfolio consultation, or both. An adviser will be in touch.',
+  intro:
+    'Request access to the Nomad App, book a portfolio consultation, register interest in Nomad Fund or join the credit waitlist. We will be in touch.',
   interestsLabel: 'I am interested in',
+  // The other pages link here with their option already picked.
   interests: {
     app: 'The Nomad App',
     advisory: 'Portfolio advisory',
+    fund: 'Nomad Fund',
+    credit: 'Credit waitlist',
   },
   fields: {
     name: { label: 'Full name', placeholder: 'Amara Okonkwo' },
@@ -110,23 +109,23 @@ export const contact = {
     message: { label: 'Anything we should know', placeholder: 'What you hold today, and what you are working towards.' },
   },
   sendButton: 'Send',
-  // Shown after sending
+  // Shown after sending. The first of these that was picked decides the message,
+  // checked in this order: advisory, fund, credit, then app.
   thanksHeading: 'Thank you.',
-  thanksAdvisory: 'An adviser will be in touch to arrange your first conversation.', // if "Portfolio advisory" was picked
-  thanksApp: 'We will be in touch with your access to the Nomad App.', // otherwise
+  thanks: {
+    advisory: 'An adviser will be in touch to arrange your first conversation.',
+    fund: 'We will be in touch with information on Nomad Capital Fund I.',
+    credit: 'You are on the list. We will tell you as soon as credit opens.',
+    app: 'We will be in touch with your access to the Nomad App.',
+  },
   sendAnotherButton: 'Send another',
 };
 
-// ---- Footer ----
-export const footer = {
-  tagline: 'A Nomad Group practice · Nomad Ventures LLP',
-  copyright: '© 2026 Nomad Group',
-  disclaimer:
-    'The value of investments can go down as well as up. Figures shown in the app are illustrative. Regulatory disclosures to be confirmed.',
-};
+// Shown in the footer on this page only, under the shared disclaimer.
+export const pageNote = 'Figures shown in the app are illustrative.';
 
 // ---- Phone mockups: illustrative figures only, not real data ----
-// Amounts are shown after the currency set at the top of LandingPage.jsx where a
+// Amounts are shown after the currency set at the top of src/pages/HomePage.jsx where a
 // currency appears (e.g. "USD 248,310").
 export const mockups = {
   // Hero phone

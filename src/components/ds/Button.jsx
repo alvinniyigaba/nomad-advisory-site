@@ -3,6 +3,7 @@ import { useState } from 'react';
 /**
  * Button — Nomad's editorial call-to-action.
  * Matte fills, restrained motion (slight compress on press), uppercase tracked label.
+ * Pass `href` to render it as a link that looks like a button.
  */
 export default function Button({
   variant = 'primary', // 'primary' | 'gold' | 'outline' | 'ghost'
@@ -11,6 +12,7 @@ export default function Button({
   full = false,
   disabled = false,
   type = 'button',
+  href,
   children,
   style = {},
   onClick,
@@ -39,10 +41,12 @@ export default function Button({
   };
   const p = palettes[variant] || palettes.primary;
 
+  const Tag = href ? 'a' : 'button';
+  const tagProps = href ? { href } : { type, disabled };
+
   return (
-    <button
-      type={type}
-      disabled={disabled}
+    <Tag
+      {...tagProps}
       onClick={onClick}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => {
@@ -72,11 +76,13 @@ export default function Button({
         transform: press && !disabled ? 'scale(0.98)' : 'none',
         transition: 'background var(--dur-fast) var(--ease-standard), transform var(--dur-fast) var(--ease-standard)',
         whiteSpace: 'nowrap',
+        textDecoration: 'none',
+        boxSizing: 'border-box',
         ...style,
       }}
       {...rest}
     >
       {children}
-    </button>
+    </Tag>
   );
 }

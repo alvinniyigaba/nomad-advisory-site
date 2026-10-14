@@ -1,5 +1,5 @@
-import figureSrc from '../assets/fund-figure.png';
-import { mockups } from '../content';
+import figureSrc from '../../assets/fund-figure.png';
+import { mockups } from '../../content/landing';
 
 // Illustrative app screens for the landing page. Their words and figures live in
 // src/content.js under `mockups`.

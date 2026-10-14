@@ -22,7 +22,7 @@ button {
   font: inherit;
 }
 
-/* ---- Header navigation: inline links on wide screens, collapsible menu below 720px ---- */
+/* ---- Header navigation: inline links on wide screens, collapsible menu below 900px ---- */
 .nav-inline {
   display: flex;
   flex-wrap: wrap;
@@ -32,7 +32,7 @@ button {
   display: none;
 }
 
-@media (max-width: 719px) {
+@media (max-width: 899px) {
   .nav-inline {
     display: none;
   }
